@@ -1,0 +1,11 @@
+3b5f715bad87d89d102e4b3f85fb4790 *DESCRIPTION
+ec9b13e6b45a30209be1694d08abfc42 *NAMESPACE
+ac082b21eeb189d8e158d30f29e09c0b *NEWS.md
+2f10b6c75a5e986f7b3a83708edae565 *R/Meditate.R
+73e4c10a8bfde60bf63e915450d9df33 *R/ReadSessions.R
+bb2e2b78a1398b442ffcd69abefcbe0a *R/sysdata.rda
+675f61ea9292b2bda47009bcd20f7fce *README.md
+0bf494a965a04606dadb13a2ba80ec23 *inst/CITATION
+02d4f63fb7869a85c1bda77ea7ff212e *inst/extdata/meditate-ex.csv
+7d573fd334aae3c04088f02444af1062 *man/Meditate.Rd
+f6f6e70dd7dcbed2e480ae17d04de335 *man/ReadSessions.Rd
