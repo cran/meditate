@@ -29,7 +29,7 @@ An object of class 'sessions' that inherits behavior from the 'data.frame' class
     \item{\code{total_practice}}{number of days that included at least one session.}
     \item{\code{average_day}}{average session time per day in minutes.}
     \item{\code{average_session}}{average session time in minutes.}
-    \item{\code{total_time}}{total session time in days.}
+    \item{\code{total_time}}{time meditating in days.}
     \item{\code{since}}{date of first session.}
   }
 }
@@ -38,7 +38,7 @@ Read session data saved by the \code{\link{Meditate}} function and summarize thi
 }
 \examples{
 file <- system.file("extdata/meditate-ex.csv", package = "meditate")
-x <- ReadSessions(file)
+x <- meditate::ReadSessions(file)
 x
 
 print.data.frame(x)

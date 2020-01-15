@@ -9,13 +9,12 @@
 
 The [R](https://www.r-project.org/) package **meditate** is a simple meditation timer that logs session information.
 
-## Install
+## Installation
 
-The current release is available on [CRAN](https://CRAN.R-project.org/package=meditate "The Comprehensive R Archive Network"),
-which you can install using the following command:
+The current release is available on [CRAN](https://CRAN.R-project.org/package=meditate "The Comprehensive R Archive Network"), which you can install using the following command:
 
 ```r
-install.packages("meditate")
+utils::install.packages("meditate")
 ```
 
 To install the development version, you need to clone the repository and build from source, or run:
@@ -26,10 +25,15 @@ remotes::install_github("jfisher-usgs/meditate")
 
 ## Usage
 
+Begin a 10-minute meditation session:
+
 ```r
-library(meditate)
-?Meditate
-Meditate()
+meditate::Meditate(10)
+```
+Access help documentation:
+
+```r
+?meditate::Meditate
 ```
 
 ## Contact
@@ -39,3 +43,5 @@ Please consider reporting bugs and asking questions on the [Issues page](https:/
 ## License
 
 This package is free and open source software, licensed under GPL (>= 2).
+
+<img src="./man/figures/mandala.svg" alt="Mandala" width=480px />

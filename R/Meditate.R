@@ -18,6 +18,13 @@
 #'   will be appended to this comma-separated values (CSV) file.
 #'   A data record consists of a session's start time in
 #'   Coordinated Universal Time (UTC) and duration in minutes.
+#' @param mandala 'logical' flag.
+#'   Whether to plot a mandala.
+#' @param ...
+#'   Arguments passed to the \code{\link{PlotMandala}} function.
+#' @param user_stops 'logical' flag.
+#'   Whether to manually stop the session timer.
+#'   Allows for extended meditation.
 #'
 #' @return Invisible \code{NULL}
 #'
@@ -32,11 +39,20 @@
 #' @export
 #'
 #' @examples
-#' Meditate(0.1, sound = FALSE, preparation = NULL, file = NULL)
+#' meditate::Meditate(0.1, sound = FALSE, preparation = NULL, file = NULL)
+#'
+#' \dontrun{
+#' # Begin a 10-minute meditation session with mandala:
+#' meditate::Meditate(10, mandala = TRUE)
+#' }
 #'
 
 Meditate <- function(duration=20, interval=NULL, repeats=TRUE,
-                     sound=TRUE, preparation=10, file="meditate.csv") {
+                     sound=TRUE, preparation=10, file="meditate.csv",
+                     mandala=FALSE, ..., user_stops=FALSE) {
+
+  # if copy-pasting, run the following command:
+  # lazyLoad(file.path(system.file("R", package="meditate"), "sysdata"))
 
   # check arguments
   checkmate::assertNumber(duration, lower=0, finite=TRUE)
@@ -46,6 +62,13 @@ Meditate <- function(duration=20, interval=NULL, repeats=TRUE,
   checkmate::assertNumber(preparation, lower=0, finite=TRUE, null.ok=TRUE)
   if (!is.null(file))
     checkmate::assertPathForOutput(file, overwrite=TRUE, extension="csv")
+  checkmate::assertFlag(mandala)
+  checkmate::assertFlag(user_stops)
+
+  if (mandala) {
+    PlotMandala(...)
+    Sys.sleep(1)
+  }
 
   if (!is.null(preparation) && preparation > 0) {
     cat("Prepare\n")
@@ -64,7 +87,7 @@ Meditate <- function(duration=20, interval=NULL, repeats=TRUE,
   stime <- Sys.time()
   etime <- stime + duration * 60
 
-  on.exit(.End(stime, etime, ring, file))
+  on.exit(.End(stime, etime, file))
 
   if (is.null(interval) || interval == 0) {
     intervals <- as.character()
@@ -74,10 +97,25 @@ Meditate <- function(duration=20, interval=NULL, repeats=TRUE,
     if (!repeats && length(intervals) > 0) intervals <- intervals[1]
   }
 
-  while(TRUE) {
+  while (TRUE) {
     Sys.sleep(1)
     sys_time <- Sys.time()
-    if (sys_time >= etime) return(invisible())
+
+    if (sys_time >= etime) {
+
+      cat("End\n")
+      utils::flush.console()
+
+      if (!is.null(ring)) {
+        audio::pause(ring)
+        audio::rewind(ring)
+        audio::resume(ring)
+      }
+
+      if (user_stops) invisible(readline("Press [enter] to stop timer "))
+
+      return(invisible())
+    }
 
     if (length(intervals) > 0 && sys_time >= intervals[1]) {
       cat("Interval\n")
@@ -92,24 +130,24 @@ Meditate <- function(duration=20, interval=NULL, repeats=TRUE,
 
 # function to run at end of session
 
-.End <- function(stime, etime, ring, file) {
+.End <- function(stime, etime, file) {
 
   sys_time <- Sys.time()
   duration <- as.numeric(sys_time - stime, units="mins")
-  is_premature <- sys_time < etime
+  premature <- sys_time < etime
 
-  if (!is.null(ring)) {
-    audio::pause(ring)
-    if (!is_premature) {
-      audio::rewind(ring)
-      audio::resume(ring)
-    }
+  if (premature) {
+    cat("Premature\n")
+    utils::flush.console()
   }
 
-  if (is_premature) cat("Premature end\n") else cat("End\n")
-  utils::flush.console()
+  if (!is.null(file)) {
 
-  if (!is.null(file) && (duration > 1 || !is_premature)) {
+    if (premature) {
+      ans <- if (interactive()) readline("Save? [y/N]: ") else "n"
+      if (tolower(substr(ans, 1, 1)) != "y") return(invisible())
+    }
+
     if (!checkmate::testFileExists(file))
       cat("start_time,duration", file=file, fill=TRUE)
     cat(format(stime, tz="UTC"), format(round(duration, 1), nsmall=1),

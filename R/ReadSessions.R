@@ -22,7 +22,7 @@
 #'     \item{\code{total_practice}}{number of days that included at least one session.}
 #'     \item{\code{average_day}}{average session time per day in minutes.}
 #'     \item{\code{average_session}}{average session time in minutes.}
-#'     \item{\code{total_time}}{total session time in days.}
+#'     \item{\code{total_time}}{time meditating in days.}
 #'     \item{\code{since}}{date of first session.}
 #'   }
 #'
@@ -34,7 +34,7 @@
 #'
 #' @examples
 #' file <- system.file("extdata/meditate-ex.csv", package = "meditate")
-#' x <- ReadSessions(file)
+#' x <- meditate::ReadSessions(file)
 #' x
 #'
 #' print.data.frame(x)
@@ -55,19 +55,16 @@ ReadSessions <- function(file="meditate.csv", tz=Sys.timezone()) {
   d[, 2] <- as.difftime(d[, 2], units="mins")
 
   dates <- as.Date(d$start_time, tz=tz)
-  is_today <- utils::tail(dates, 1) == Sys.Date()
+  is_current <- utils::tail(dates, 1) >= Sys.Date() - 1
 
   x <- rle(as.numeric(diff(unique(dates))))
-  if (length(x) > 0 && is_today && utils::tail(x$values, 1) == 1)
+  if (length(x$values) > 0 && is_current && utils::tail(x$values, 1) == 1)
     current_streak <- utils::tail(x$lengths, 1) + 1L
   else
-    current_streak <- as.integer(is_today)
+    current_streak <- as.integer(is_current)
 
   x <- x$lengths[x$values == 1]
-  if (length(x) > 0)
-    longest_streak <- max(x) + 1L
-  else
-    longest_streak <- 1L
+  longest_streak <- if (length(x) > 0) max(x) + 1L else 1L
 
   total_practice <- length(unique(dates))
 
@@ -111,7 +108,7 @@ print.sessions <- function(x, ...) {
               format(round(attr(x, "average_day"), 1))))
   cat(sprintf("Average per session: %s\n",
               format(round(attr(x, "average_session"), 1))))
-  cat(sprintf("Total time: %s since %s\n",
+  cat(sprintf("Time meditating: %s since %s\n",
               format(round(attr(x, "total_time"), 2), big.mark=",", nsmall=1),
               format(attr(x, "since"), "%b %d %Y")))
 

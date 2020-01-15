@@ -10,7 +10,10 @@ Meditate(
   repeats = TRUE,
   sound = TRUE,
   preparation = 10,
-  file = "meditate.csv"
+  file = "meditate.csv",
+  mandala = FALSE,
+  ...,
+  user_stops = FALSE
 )
 }
 \arguments{
@@ -35,6 +38,15 @@ File to write session information---new data records
 will be appended to this comma-separated values (CSV) file.
 A data record consists of a session's start time in
 Coordinated Universal Time (UTC) and duration in minutes.}
+
+\item{mandala}{'logical' flag.
+Whether to plot a mandala.}
+
+\item{...}{Arguments passed to the \code{\link{PlotMandala}} function.}
+
+\item{user_stops}{'logical' flag.
+Whether to manually stop the session timer.
+Allows for extended meditation.}
 }
 \value{
 Invisible \code{NULL}
@@ -43,7 +55,12 @@ Invisible \code{NULL}
 A simple meditation timer that logs session information.
 }
 \examples{
-Meditate(0.1, sound = FALSE, preparation = NULL, file = NULL)
+meditate::Meditate(0.1, sound = FALSE, preparation = NULL, file = NULL)
+
+\dontrun{
+# Begin a 10-minute meditation session with mandala:
+meditate::Meditate(10, mandala = TRUE)
+}
 
 }
 \seealso{
